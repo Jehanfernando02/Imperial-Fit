@@ -1,17 +1,26 @@
+import mongoose from "mongoose";
 import Product from "../infrastructure/schemas/Product.js";
 import { createProductDto } from "./dto/products.js";
 import { ValidationError } from "../domain/errors/validation-error.js";
 import { NotFoundError } from "../domain/errors/not-found-error.js";
 
 export const getProducts = async (req, res) => {
-  if (req.query.categoryId) {
-    const categoryId = req.query.categoryId;
-    const filteredProducts = await Product.find({ categoryId: categoryId });
-    return res.status(200).json(filteredProducts).send();
-  }
+  try {
+    const { categoryId } = req.query;
+    let filter = {};
 
-  const products = await Product.find();
-  return res.status(200).json(products);
+    if (categoryId && categoryId !== "ALL") {
+      if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+        return res.status(400).json({ error: "Invalid categoryId format" });
+      }
+      filter.categoryId = new mongoose.Types.ObjectId(categoryId);
+    }
+
+    const products = await Product.find(filter);
+    return res.status(200).json(products);
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
 };
 
 export const createProduct = async (req, res, next) => {
@@ -39,12 +48,16 @@ export const createProduct = async (req, res, next) => {
 export const getProductById = async (req, res, next) => {
   try {
     const id = req.params.id;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ error: "Invalid product ID format" });
+    }
+
     const product = await Product.findById(id).populate("categoryId");
     if (!product) {
       throw new NotFoundError("Product not found");
     }
 
-    return res.status(200).json(product).send();
+    return res.status(200).json(product);
   } catch (error) {
     next(error);
   }
