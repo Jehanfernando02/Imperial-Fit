@@ -4,6 +4,7 @@ function Hero() {
     return (
         <section className="relative w-full h-screen overflow-hidden">
             <img 
+            //correct path
                 src="/public/assets/Hero/bg4.jpg" 
                 alt="Hero Background" 
                 className="absolute inset-0 w-full h-full object-cover opacity-90" 
