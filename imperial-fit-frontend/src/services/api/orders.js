@@ -1,7 +1,7 @@
 export const createOrder = async (data) => {
   const token = await window.Clerk?.session?.getToken();
 
-  const res = await fetch("http://localhost:8000/api/orders", {
+  const res = await fetch("https://imperial-fit-61ce.vercel.app/api/orders", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -16,7 +16,7 @@ export const createOrder = async (data) => {
 export const getOrderById = async (id) => {
   const token = await window.Clerk?.session?.getToken();
 
-  const res = await fetch(`http://localhost:8000/api/orders/${id}`, {
+  const res = await fetch(`https://imperial-fit-61ce.vercel.app/api/orders/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -33,7 +33,7 @@ export const getOrderById = async (id) => {
 export const getOrdersByUser = async (userId) => {
   const token = await window.Clerk?.session?.getToken();
 
-  const res = await fetch(`http://localhost:8000/api/orders/user/${userId}`, {
+  const res = await fetch(`https://imperial-fit-61ce.vercel.app/api/orders/user/${userId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
