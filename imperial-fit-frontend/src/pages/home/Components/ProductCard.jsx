@@ -1,8 +1,8 @@
 import { Heart, Plus, Minus } from "lucide-react";
 import { useState, useContext } from "react";
 import { CartContext } from "../../../context/cartContext";
-import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
+import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 function ProductCard(props) {
     const [count, setCount] = useState(0);
@@ -25,7 +25,7 @@ function ProductCard(props) {
             description: props.description,
             count: 1,
         });
-        toast.success('Item added to cart');
+        toast.success("Item added to cart");
     };
 
     const handleRemoveFromCart = (e) => {
@@ -46,10 +46,10 @@ function ProductCard(props) {
     return (
         <div className="relative bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300">
             <Link to={`/product/${props._id}`} className="block h-40 sm:h-48 md:h-56 bg-[#f4f8f9] rounded-t-lg overflow-hidden">
-                <img 
-                    src={props.image} 
-                    alt={props.name} 
-                    className="w-full h-full object-contain sm:object-cover transition-transform duration-300 hover:scale-105" 
+                <img
+                    src={props.image}
+                    alt={props.name}
+                    className="w-full h-full object-contain sm:object-cover transition-transform duration-300 hover:scale-105"
                 />
             </Link>
             <div className="p-3 sm:p-4">
@@ -75,7 +75,7 @@ function ProductCard(props) {
                         </button>
                     </div>
                     <Heart
-                        className={`cursor-pointer text-red-500 w-5 h-5 sm:w-6 sm:h-6 ${isLiked ? 'fill-red-500' : ''}`}
+                        className={`cursor-pointer text-red-500 w-5 h-5 sm:w-6 sm:h-6 ${isLiked ? "fill-red-500" : ""}`}
                         onClick={handleHeartClick}
                     />
                 </div>
