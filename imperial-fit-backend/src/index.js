@@ -8,26 +8,27 @@ import { connectDB } from "./infrastructure/db.js";
 import { globalErrorHandler } from "./api/middleware/global-error-handler.js";
 import cors from "cors";
 
-
-
 const app = express();
 app.use(express.json());
-app.use(cors({origin : "http://localhost:5173"}));
 
-// app.use((req, res, next) => {
-//   console.log("Pre");
-//   next();
-// });
+// Update the CORS to accept requests from the deployed frontend on Vercel
+app.use(cors({
+  origin: "https://imperial-fit-61ce.vercel.app"  // Update this to match your deployed frontend URL
+}));
 
+// Define the routes for your API
 app.use("/api/products", productsRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/orders", ordersRouter);
 
+// Error handling middleware
 app.use(globalErrorHandler);
 
+// Connect to the database
 const PORT = process.env.Port || 8000;
 connectDB();
 
+// Start the server
 app.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
