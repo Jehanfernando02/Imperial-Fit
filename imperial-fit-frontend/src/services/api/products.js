@@ -2,7 +2,7 @@ const sleep = (delay) => new Promise((resolve) => setTimeout(resolve, delay));
 
 export const getProductById = async (id) => {
   try {
-    const res = await fetch(`https://imperial-fit-61ce.vercel.app/api/products/${id}`, {
+    const res = await fetch(`https://imperial-fit-backend.onrender.com/api/products/${id}`, {
       method: "GET",
     });
 
@@ -29,7 +29,7 @@ export const getAllProducts = async ({ categoryId = "ALL", sort = "low-to-high" 
     }).toString();
 
 
-    const res = await fetch(`https://imperial-fit-61ce.vercel.app/api/products?${queryParams}`, {
+    const res = await fetch(`https://imperial-fit-backend.onrender.com/api/products?${queryParams}`, {
       method: "GET",
     });
 

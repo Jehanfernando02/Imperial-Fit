@@ -13,7 +13,7 @@ app.use(express.json());
 
 // Update the CORS to accept requests from the deployed frontend on Vercel
 app.use(cors({
-  origin: "https://imperial-fit-61ce.vercel.app"  // Update this to match your deployed frontend URL
+  origin: "https://imperial-fit.vercel.app"  // Update this to match your deployed frontend URL
 }));
 
 // Define the routes for your API
