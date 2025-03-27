@@ -39,7 +39,7 @@ const OrdersPage = () => {
     return (
       <div className="relative flex items-center justify-center min-h-screen">
         <img 
-          src="/public/assets/Hero/bg4.jpg" 
+          src="/assets/Hero/bg4.jpg" 
           alt="Hero Background" 
           className="absolute inset-0 w-full h-full object-cover opacity-20" 
         />

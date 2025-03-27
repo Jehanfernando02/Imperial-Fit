@@ -51,10 +51,11 @@ function Products() {
         fetchInitialData();
     }, []);
 
+
     if (isLoading) {
         return (
             <section className="relative py-12 px-4 w-full min-h-screen flex items-center justify-center">
-                <img src="/public/assets/Hero/bg4.jpg" alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-30" />
+                <img src="/assets/Hero/bg4.jpg" alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-30" />
                 <div className="relative z-10 text-center">
                     <div className="text-black text-2xl sm:text-4xl font-bold mb-4">Loading...</div>
                     <div className="loader"></div>
