@@ -13,7 +13,7 @@ const OrdersPage = () => {
       getOrdersByUser(user.id)
         .then((fetchedOrders) => {
           console.log("Fetched Orders:", fetchedOrders); // Debug log
-          setOrders(fetchedOrders || []);
+          setOrders(Array.isArray(fetchedOrders) ? fetchedOrders : []);
           setLoading(false);
         })
         .catch((err) => {
@@ -61,71 +61,73 @@ const OrdersPage = () => {
       </h2>
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {orders.length > 0 ? (
-          orders.map((order, index) => (
-            <div
-              key={order._id}
-              className={`relative bg-gradient-to-br ${
-                cardGradients[index % cardGradients.length]
-              } text-white p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
-            >
-              <div className="absolute top-0 left-0 w-full h-2 bg-white opacity-10 rounded-t-xl" />
-              <div className="mb-4">
-                <p className="text-lg font-bold text-white">
-                  Order #{index + 1}
-                </p>
+          orders.map((order, index) => {
+            const safeAddress = order.address || {};
+            const safeProducts = order.orderProducts || [];
+            return (
+              <div
+                key={order._id || index}
+                className={`relative bg-gradient-to-br ${
+                  cardGradients[index % cardGradients.length]
+                } text-white p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
+              >
+                <div className="absolute top-0 left-0 w-full h-2 bg-white opacity-10 rounded-t-xl" />
+                <div className="mb-4">
+                  <p className="text-lg font-bold text-white">
+                    Order #{index + 1}
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Order ID:</span>
+                    <span className="text-gray-100 break-all">{order._id || "N/A"}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Products:</span>
+                    <span className="text-gray-100">
+                      {safeProducts.length > 0
+                        ? safeProducts.map(p => `${p.productId?.name || "Unknown"} (x${p.quantity || 1})`).join(", ")
+                        : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Total:</span>
+                    <span className="text-gray-100">
+                      Rs. {safeProducts.reduce((total, item) => total + (parseFloat(item.productId?.price || 0) * (item.quantity || 1)), 0).toFixed(2) || "0.00"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Name:</span>
+                    <span className="text-gray-100">
+                      {safeAddress.fname || safeAddress.lname ? `${safeAddress.fname || "Unknown"} ${safeAddress.lname || "User"}` : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Address:</span>
+                    <span className="text-gray-100">
+                      {safeAddress.line_1 ? `${safeAddress.line_1}, ${safeAddress.line_2 || ""}, ${safeAddress.city || ""}` : "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Phone:</span>
+                    <span className="text-gray-100">{safeAddress.phone || "N/A"}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Payment Status:</span>
+                    <span className={`font-medium ${order.paymentStatus === "PENDING" ? "text-yellow-200" : "text-green-200"}`}>
+                      {order.paymentStatus || "N/A"}
+                    </span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-sm text-gray-200">Delivery Status:</span>
+                    <span className={`font-medium ${order.deliveryStatus === "Pending" ? "text-yellow-200" : "text-green-200"}`}>
+                      {order.deliveryStatus || "N/A"}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="space-y-3">
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Order ID:</span>
-                  <span className="text-gray-100 break-all">{order._id || "N/A"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Products:</span>
-                  <span className="text-gray-100">
-                    {order.orderProducts?.map(p => `${p.productId?.name || "Unknown"} (x${p.quantity})`).join(", ") || "N/A"}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Total:</span>
-                  <span className="text-gray-100">
-                    Rs. {order.orderProducts?.reduce((total, item) => total + (parseFloat(item.productId?.price || 0) * item.quantity), 0).toFixed(2) || "0.00"}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Name:</span>
-                  <span className="text-gray-100">
-                    {order.address && (order.address.fname || order.address.lname) 
-                      ? `${order.address.fname || "Unknown"} ${order.address.lname || "User"}` 
-                      : "N/A"}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Address:</span>
-                  <span className="text-gray-100">
-                    {order.address && order.address.line_1
-                      ? `${order.address.line_1}, ${order.address.line_2 || ""}, ${order.address.city || ""}`
-                      : "N/A"}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Phone:</span>
-                  <span className="text-gray-100">{order.address?.phone || "N/A"}</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Payment Status:</span>
-                  <span className={`font-medium ${order.paymentStatus === "PENDING" ? "text-yellow-200" : "text-green-200"}`}>
-                    {order.paymentStatus || "N/A"}
-                  </span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-semibold text-sm text-gray-200">Delivery Status:</span>
-                  <span className={`font-medium ${order.deliveryStatus === "Pending" ? "text-yellow-200" : "text-green-200"}`}>
-                    {order.deliveryStatus || "N/A"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="col-span-full text-center text-white text-3xl py-20">
             <p className="font-semibold">No orders yet!</p>
