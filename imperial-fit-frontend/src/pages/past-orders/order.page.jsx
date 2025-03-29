@@ -12,7 +12,8 @@ const OrdersPage = () => {
     if (user) {
       getOrdersByUser(user.id)
         .then((fetchedOrders) => {
-          setOrders(fetchedOrders);
+          console.log("Fetched Orders:", fetchedOrders); // Debug log
+          setOrders(fetchedOrders || []);
           setLoading(false);
         })
         .catch((err) => {
@@ -24,79 +25,112 @@ const OrdersPage = () => {
 
   if (loading) {
     return (
-      <div className="relative flex items-center justify-center min-h-screen">
-        <img 
-          src="/assets/Hero/bg4.jpg" 
-          alt="Background" 
-          className="absolute inset-0 w-full h-full object-cover opacity-20" 
+      <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-black">
+        <img
+          src="/assets/Hero/bg4.jpg"
+          alt="Background"
+          className="absolute inset-0 w-full h-full object-cover opacity-20"
         />
-        <div className="relative z-10 text-3xl text-black">Loading your past orders...</div>
+        <div className="relative z-10 text-3xl text-white animate-pulse">
+          Loading your past orders...
+        </div>
       </div>
     );
   }
 
   if (error) {
-    return <div className="text-red-500 text-center">Error loading orders: {error}</div>;
+    return (
+      <div className="text-center text-red-400 text-2xl py-20 bg-gray-900 min-h-screen">
+        Error loading orders: {error}
+      </div>
+    );
   }
 
-  const colors = ["bg-red-600", "bg-green-600", "bg-blue-600", "bg-yellow-600"];
+  const cardGradients = [
+    "from-red-500 to-pink-600",
+    "from-green-500 to-teal-600",
+    "from-blue-500 to-indigo-600",
+    "from-yellow-500 to-orange-600",
+    "from-purple-500 to-violet-600",
+  ];
 
   return (
-    <div className="bg-gray-800 p-8 min-h-screen">
-      <h2 className="text-3xl font-semibold text-yellow-300 mb-8 text-center pt-16">Your Past Orders</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
+      <h2 className="text-4xl font-extrabold text-yellow-300 mb-10 text-center pt-16 tracking-wide">
+        Your Past Orders
+      </h2>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {orders.length > 0 ? (
           orders.map((order, index) => (
-            <div key={order._id} className={`${colors[index % colors.length]} text-white p-4 rounded-lg shadow-md`}>
-              <div className="mb-3">
-                <p className="font-bold">Order: {index + 1}</p>
-              </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Order ID:</p>
-                <p className="text-gray-100" style={{ marginLeft: '10px' }}>{order._id}</p>
-              </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Products:</p>
-                <p className="text-gray-100" style={{ marginLeft: '10px' }}>
-                  {order.orderProducts.map(p => `${p.productId.name} (x${p.quantity})`).join(", ")}
+            <div
+              key={order._id}
+              className={`relative bg-gradient-to-br ${
+                cardGradients[index % cardGradients.length]
+              } text-white p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
+            >
+              <div className="absolute top-0 left-0 w-full h-2 bg-white opacity-10 rounded-t-xl" />
+              <div className="mb-4">
+                <p className="text-lg font-bold text-white">
+                  Order #{index + 1}
                 </p>
               </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Total:</p>
-                <p className="text-gray-100" style={{ marginLeft: '10px' }}>
-                  Rs. {order.orderProducts.reduce((total, item) => total + (parseFloat(item.productId.price) * item.quantity), 0).toFixed(2)}
-                </p>
-              </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Name:</p>
-                <p className="text-gray-100" style={{ marginLeft: '10px' }}>{order.address.fname} {order.address.lname}</p>
-              </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Address:</p>
-                <p className="text-gray-100" style={{ marginLeft: '10px' }}>{order.address.line_1}, {order.address.line_2 || ""}, {order.address.city}</p>
-              </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Phone:</p>
-                <p className="text-gray-100" style={{ marginLeft: '10px' }}>{order.address.phone || "N/A"}</p>
-              </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Payment Status:</p>
-                <p className={order.paymentStatus === "PENDING" ? "text-yellow-200" : "text-green-200"} style={{ marginLeft: '10px' }}>
-                  {order.paymentStatus}
-                </p>
-              </div>
-              <div className="flex mb-2">
-                <p className="font-bold">Delivery Status:</p>
-                <p className={`text-gray-100 ${order.deliveryStatus === "Pending" ? "text-yellow-200" : "text-green-200"}`} style={{ marginLeft: '10px' }}>
-                  {order.deliveryStatus}
-                </p>
+              <div className="space-y-3">
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Order ID:</span>
+                  <span className="text-gray-100 break-all">{order._id || "N/A"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Products:</span>
+                  <span className="text-gray-100">
+                    {order.orderProducts?.map(p => `${p.productId?.name || "Unknown"} (x${p.quantity})`).join(", ") || "N/A"}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Total:</span>
+                  <span className="text-gray-100">
+                    Rs. {order.orderProducts?.reduce((total, item) => total + (parseFloat(item.productId?.price || 0) * item.quantity), 0).toFixed(2) || "0.00"}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Name:</span>
+                  <span className="text-gray-100">
+                    {order.address && (order.address.fname || order.address.lname) 
+                      ? `${order.address.fname || "Unknown"} ${order.address.lname || "User"}` 
+                      : "N/A"}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Address:</span>
+                  <span className="text-gray-100">
+                    {order.address && order.address.line_1
+                      ? `${order.address.line_1}, ${order.address.line_2 || ""}, ${order.address.city || ""}`
+                      : "N/A"}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Phone:</span>
+                  <span className="text-gray-100">{order.address?.phone || "N/A"}</span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Payment Status:</span>
+                  <span className={`font-medium ${order.paymentStatus === "PENDING" ? "text-yellow-200" : "text-green-200"}`}>
+                    {order.paymentStatus || "N/A"}
+                  </span>
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-semibold text-sm text-gray-200">Delivery Status:</span>
+                  <span className={`font-medium ${order.deliveryStatus === "Pending" ? "text-yellow-200" : "text-green-200"}`}>
+                    {order.deliveryStatus || "N/A"}
+                  </span>
+                </div>
               </div>
             </div>
           ))
         ) : (
-          <p className="text-white text-4xl text-center pt-32">
-            You have not placed any orders yet. Start exploring our products and make your first order!
-          </p>
+          <div className="col-span-full text-center text-white text-3xl py-20">
+            <p className="font-semibold">No orders yet!</p>
+            <p className="text-lg mt-2 text-gray-300">Explore our shop and place your first order today.</p>
+          </div>
         )}
       </div>
     </div>
