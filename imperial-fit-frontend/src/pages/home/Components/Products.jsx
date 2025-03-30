@@ -80,9 +80,11 @@ function Products() {
   if (isCategoryLoading) {
     return (
       <section className="relative py-12 px-4 w-full min-h-screen flex items-center justify-center bg-neutral-900">
-        <div className="text-center">
-          <p className="text-white text-lg">Loading...</p>
-        </div>
+          <img 
+          src="/assets/Hero/bg4.jpg" 
+          alt="Background" 
+          className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm" 
+        />
       </section>
     );
   }
