@@ -1,47 +1,137 @@
+// src/pages/programs/ProgramsPage.jsx
+import { useState, useEffect } from "react";
+import { useUser } from "@clerk/clerk-react";
+import { toast } from "sonner";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { getPrograms, enrollInProgram } from "../../services/api/programs";
+
 function ProgramsPage() {
-  return (
-      <main className="bg-gray-900 min-h-screen px-8 py-24">
-          <div className="max-w-7xl mx-auto">
-              <h1 className="text-5xl font-bold text-center text-yellow-400 mb-16">
-                  Our Fitness Programs
-              </h1>
+  const { isSignedIn, user } = useUser();
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [filter, setFilter] = useState("All");
+  const [expandedProgram, setExpandedProgram] = useState(null);
 
-              <section className="mb-12 bg-blue-600 rounded-lg p-8 shadow-lg hover:shadow-xl transition duration-300">
-                  <h2 className="text-3xl font-semibold text-white mb-4">Weight Training</h2>
-                  <p className="text-lg text-gray-200">
-                      Build strength and muscle with our comprehensive weight training programs. Whether you're a beginner or an experienced lifter, our trainers will guide you through tailored routines to meet your goals. We focus on proper form, progressive overload, and balanced nutrition to ensure you gain lean muscle mass and improve overall strength.
-                  </p>
-              </section>
+  useEffect(() => {
+    const loadPrograms = async () => {
+      try {
+        const fetchedPrograms = await getPrograms();
+        setPrograms(fetchedPrograms);
+      } catch (err) {
+        setError("Failed to load programs. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadPrograms();
+  }, []);
 
-              <section className="mb-12 bg-green-600 rounded-lg p-8 shadow-lg hover:shadow-xl transition duration-300">
-                  <h2 className="text-3xl font-semibold text-white mb-4">Cardio Training</h2>
-                  <p className="text-lg text-gray-200">
-                      Improve your cardiovascular health with our high-energy cardio programs. From interval training to steady-state cardio, we offer a variety of workouts designed to burn calories, improve endurance, and boost heart health. Join our group classes or work one-on-one with a trainer to maximize your cardio sessions.
-                  </p>
-              </section>
+  const handleEnroll = async (programId) => {
+    if (!isSignedIn) {
+      toast.error("Please sign in to enroll in a program!");
+      return;
+    }
+    try {
+      await enrollInProgram(user.id, programId);
+      toast.success("Successfully enrolled! Check your email for details.");
+    } catch (err) {
+      toast.error("Enrollment failed. Try again later.");
+    }
+  };
 
-              <section className="mb-12 bg-purple-600 rounded-lg p-8 shadow-lg hover:shadow-xl transition duration-300">
-                  <h2 className="text-3xl font-semibold text-white mb-4">Yoga & Flexibility</h2>
-                  <p className="text-lg text-gray-200">
-                      Enhance your flexibility and reduce stress with our yoga programs. Our certified instructors offer classes ranging from beginner to advanced levels, focusing on breath control, balance, and mental relaxation. Whether you're looking to increase your range of motion or find inner peace, our yoga classes are perfect for all fitness levels.
-                  </p>
-              </section>
+  const toggleExpand = (id) => {
+    setExpandedProgram(expandedProgram === id ? null : id);
+  };
 
-              <section className="mb-12 bg-orange-600 rounded-lg p-8 shadow-lg hover:shadow-xl transition duration-300">
-                  <h2 className="text-3xl font-semibold text-white mb-4">High-Intensity Interval Training (HIIT)</h2>
-                  <p className="text-lg text-gray-200">
-                      Experience the benefits of HIIT with our dynamic and challenging programs. These high-intensity workouts are designed to push your limits, combining short bursts of intense exercise with periods of rest or lower-intensity exercise. Perfect for those looking to burn fat, build endurance, and improve overall fitness in a time-efficient manner.
-                  </p>
-              </section>
+  const categories = ["All", "Strength", "Cardio", "Flexibility", "Personalized"];
+  const filteredPrograms = filter === "All" ? programs : programs.filter(p => p.category === filter);
 
-              <section className="mb-12 bg-red-600 rounded-lg p-8 shadow-lg hover:shadow-xl transition duration-300">
-                  <h2 className="text-3xl font-semibold text-white mb-4">Personal Training</h2>
-                  <p className="text-lg text-gray-200">
-                      Get personalized guidance with our expert personal trainers. Whether you're looking to lose weight, gain muscle, or simply improve your fitness, our trainers will create a custom program tailored to your needs and goals. Enjoy one-on-one sessions that focus on proper technique, motivation, and accountability.
-                  </p>
-              </section>
-          </div>
+  if (loading) {
+    return (
+      <main className="bg-gray-900 min-h-screen px-8 py-24 flex items-center justify-center">
+        <div className="text-center animate-softFadeIn">
+          <h2 className="text-3xl font-bold text-white mb-4">Loading Programs...</h2>
+          <p className="text-gray-300">Getting your fitness journey ready—just a sec!</p>
+        </div>
       </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="bg-gray-900 min-h-screen px-8 py-24 flex items-center justify-center">
+        <p className="text-red-400 text-xl">{error}</p>
+      </main>
+    );
+  }
+
+  return (
+    <main className="bg-gray-900 min-h-screen px-8 py-24">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-5xl font-bold text-center text-yellow-400 mb-12 animate-softFadeIn">
+          Our Fitness Programs
+        </h1>
+
+        {/* Filter Tabs */}
+        <div className="flex flex-wrap justify-center gap-4 mb-12">
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat)}
+              className={`px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 ease-in-out ${
+                filter === cat
+                  ? "bg-yellow-400 text-black shadow-lg"
+                  : "bg-gray-700 hover:bg-gray-600"
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Programs List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredPrograms.map((program) => (
+            <div
+              key={program._id}
+              className={`${program.color} rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}
+            >
+              <h2 className="text-2xl font-semibold text-white mb-3">{program.title}</h2>
+              <p className="text-gray-200 mb-4">{program.description}</p>
+              
+              {/* Collapsible Details */}
+              <button
+                onClick={() => toggleExpand(program._id)}
+                className="flex items-center text-yellow-300 hover:text-yellow-400 transition duration-200"
+              >
+                {expandedProgram === program._id ? "Hide Details" : "Show Details"}
+                {expandedProgram === program._id ? (
+                  <ChevronUp className="ml-2 w-5 h-5" />
+                ) : (
+                  <ChevronDown className="ml-2 w-5 h-5" />
+                )}
+              </button>
+              {expandedProgram === program._id && (
+                <div className="mt-4 text-gray-100 animate-softFadeIn">
+                  <p><strong>Duration:</strong> {program.duration}</p>
+                  <p><strong>Difficulty:</strong> {program.difficulty}</p>
+                  <p><strong>Trainer:</strong> {program.trainer}</p>
+                </div>
+              )}
+
+              {/* Enroll Button */}
+              <button
+                onClick={() => handleEnroll(program._id)}
+                className="mt-6 w-full bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-500 transition-all duration-300 shadow-md"
+              >
+                Enroll Now
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </main>
   );
 }
 
