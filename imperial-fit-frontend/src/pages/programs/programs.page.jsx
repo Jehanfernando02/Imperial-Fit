@@ -1,4 +1,3 @@
-// src/pages/programs/ProgramsPage.jsx
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { toast } from "sonner";
@@ -44,8 +43,21 @@ function ProgramsPage() {
     setExpandedProgram(expandedProgram === id ? null : id);
   };
 
+  const handleFilterClick = (category) => {
+    console.log("Filter clicked:", category); // Debug: Check if click registers
+    setFilter(category);
+    console.log("New filter state:", category); // Debug: Confirm state update
+  };
+
   const categories = ["All", "Strength", "Cardio", "Flexibility", "Personalized"];
-  const filteredPrograms = filter === "All" ? programs : programs.filter(p => p.category === filter);
+  const filteredPrograms = filter === "All" 
+    ? programs 
+    : programs.filter(p => p.category.toLowerCase() === filter.toLowerCase());
+
+  // Debug: Log filtered programs to ensure filtering works
+  useEffect(() => {
+    console.log("Filtered programs:", filteredPrograms);
+  }, [filter, programs]);
 
   if (loading) {
     return (
@@ -78,7 +90,7 @@ function ProgramsPage() {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setFilter(cat)}
+              onClick={() => handleFilterClick(cat)}
               className={`px-6 py-2 rounded-full text-white font-semibold transition-all duration-300 ease-in-out ${
                 filter === cat
                   ? "bg-yellow-400 text-black shadow-lg"
@@ -92,43 +104,47 @@ function ProgramsPage() {
 
         {/* Programs List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredPrograms.map((program) => (
-            <div
-              key={program._id}
-              className={`${program.color} rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}
-            >
-              <h2 className="text-2xl font-semibold text-white mb-3">{program.title}</h2>
-              <p className="text-gray-200 mb-4">{program.description}</p>
-              
-              {/* Collapsible Details */}
-              <button
-                onClick={() => toggleExpand(program._id)}
-                className="flex items-center text-yellow-300 hover:text-yellow-400 transition duration-200"
+          {filteredPrograms.length > 0 ? (
+            filteredPrograms.map((program) => (
+              <div
+                key={program._id}
+                className={`${program.color} rounded-lg p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2`}
               >
-                {expandedProgram === program._id ? "Hide Details" : "Show Details"}
-                {expandedProgram === program._id ? (
-                  <ChevronUp className="ml-2 w-5 h-5" />
-                ) : (
-                  <ChevronDown className="ml-2 w-5 h-5" />
+                <h2 className="text-2xl font-semibold text-white mb-3">{program.title}</h2>
+                <p className="text-gray-200 mb-4">{program.description}</p>
+                
+                {/* Collapsible Details */}
+                <button
+                  onClick={() => toggleExpand(program._id)}
+                  className="flex items-center text-yellow-300 hover:text-yellow-400 transition duration-200"
+                >
+                  {expandedProgram === program._id ? "Hide Details" : "Show Details"}
+                  {expandedProgram === program._id ? (
+                    <ChevronUp className="ml-2 w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="ml-2 w-5 h-5" />
+                  )}
+                </button>
+                {expandedProgram === program._id && (
+                  <div className="mt-4 text-gray-100 animate-softFadeIn">
+                    <p><strong>Duration:</strong> {program.duration}</p>
+                    <p><strong>Difficulty:</strong> {program.difficulty}</p>
+                    <p><strong>Trainer:</strong> {program.trainer}</p>
+                  </div>
                 )}
-              </button>
-              {expandedProgram === program._id && (
-                <div className="mt-4 text-gray-100 animate-softFadeIn">
-                  <p><strong>Duration:</strong> {program.duration}</p>
-                  <p><strong>Difficulty:</strong> {program.difficulty}</p>
-                  <p><strong>Trainer:</strong> {program.trainer}</p>
-                </div>
-              )}
 
-              {/* Enroll Button */}
-              <button
-                onClick={() => handleEnroll(program._id)}
-                className="mt-6 w-full bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-500 transition-all duration-300 shadow-md"
-              >
-                Enroll Now
-              </button>
-            </div>
-          ))}
+                {/* Enroll Button */}
+                <button
+                  onClick={() => handleEnroll(program._id)}
+                  className="mt-6 w-full bg-yellow-400 text-black py-2 rounded-lg font-semibold hover:bg-yellow-500 transition-all duration-300 shadow-md"
+                >
+                  Enroll Now
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className="text-white text-center col-span-full">No programs found for this category.</p>
+          )}
         </div>
       </div>
     </main>
