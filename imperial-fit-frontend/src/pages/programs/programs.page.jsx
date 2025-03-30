@@ -16,10 +16,11 @@ function ProgramsPage() {
     const loadPrograms = async () => {
       try {
         const fetchedPrograms = await getPrograms();
-        console.log("Raw programs from backend:", fetchedPrograms); // Debug: See raw data
-        setPrograms(fetchedPrograms);
+        console.log("Raw programs from backend:", fetchedPrograms); // Debug: Raw data
+        setPrograms(fetchedPrograms || []); // Fallback to empty array if null/undefined
       } catch (err) {
-        setError("Failed to load programs. Please try again later.");
+        setError("Failed to load programs: " + err.message);
+        console.error("Fetch error:", err);
       } finally {
         setLoading(false);
       }
@@ -55,13 +56,13 @@ function ProgramsPage() {
     : programs.filter(p => {
         const programCategory = p.category ? p.category.toLowerCase() : "";
         const filterCategory = filter.toLowerCase();
-        console.log(`Comparing: ${programCategory} === ${filterCategory}`); // Debug: Check comparison
+        console.log(`Comparing: "${programCategory}" === "${filterCategory}"`); // Debug: Filter comparison
         return programCategory === filterCategory;
       });
 
   useEffect(() => {
-    console.log("Current filter:", filter); // Debug: Track filter state
-    console.log("Filtered programs:", filteredPrograms); // Debug: See filtered result
+    console.log("Current filter:", filter); // Debug: Track filter
+    console.log("Filtered programs:", filteredPrograms); // Debug: Resulting programs
   }, [filter, programs]);
 
   if (loading) {
@@ -149,7 +150,7 @@ function ProgramsPage() {
             ))
           ) : (
             <p className="text-white text-center col-span-full">
-              No programs found for this category.
+              No programs found for this category. Total programs: {programs.length}
             </p>
           )}
         </div>
