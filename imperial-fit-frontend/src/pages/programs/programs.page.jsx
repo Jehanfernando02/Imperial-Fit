@@ -16,6 +16,7 @@ function ProgramsPage() {
     const loadPrograms = async () => {
       try {
         const fetchedPrograms = await getPrograms();
+        console.log("Raw programs from backend:", fetchedPrograms); // Debug: See raw data
         setPrograms(fetchedPrograms);
       } catch (err) {
         setError("Failed to load programs. Please try again later.");
@@ -44,19 +45,23 @@ function ProgramsPage() {
   };
 
   const handleFilterClick = (category) => {
-    console.log("Filter clicked:", category); // Debug: Check if click registers
+    console.log("Filter clicked:", category); // Debug: Confirm click
     setFilter(category);
-    console.log("New filter state:", category); // Debug: Confirm state update
   };
 
   const categories = ["All", "Strength", "Cardio", "Flexibility", "Personalized"];
   const filteredPrograms = filter === "All" 
     ? programs 
-    : programs.filter(p => p.category.toLowerCase() === filter.toLowerCase());
+    : programs.filter(p => {
+        const programCategory = p.category ? p.category.toLowerCase() : "";
+        const filterCategory = filter.toLowerCase();
+        console.log(`Comparing: ${programCategory} === ${filterCategory}`); // Debug: Check comparison
+        return programCategory === filterCategory;
+      });
 
-  // Debug: Log filtered programs to ensure filtering works
   useEffect(() => {
-    console.log("Filtered programs:", filteredPrograms);
+    console.log("Current filter:", filter); // Debug: Track filter state
+    console.log("Filtered programs:", filteredPrograms); // Debug: See filtered result
   }, [filter, programs]);
 
   if (loading) {
@@ -143,7 +148,9 @@ function ProgramsPage() {
               </div>
             ))
           ) : (
-            <p className="text-white text-center col-span-full">No programs found for this category.</p>
+            <p className="text-white text-center col-span-full">
+              No programs found for this category.
+            </p>
           )}
         </div>
       </div>
