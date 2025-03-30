@@ -12,6 +12,15 @@ function ProgramsPage() {
   const [filter, setFilter] = useState("All");
   const [expandedProgram, setExpandedProgram] = useState(null);
 
+  // Enhanced color palettes for programs
+  const categoryColors = {
+    Strength: "bg-gradient-to-br from-purple-600 to-purple-800",
+    Cardio: "bg-gradient-to-br from-blue-500 to-indigo-700",
+    Flexibility: "bg-gradient-to-br from-teal-500 to-green-700",
+    Personalized: "bg-gradient-to-br from-rose-500 to-pink-700",
+    default: "bg-gradient-to-br from-gray-600 to-gray-800"
+  };
+
   useEffect(() => {
     const loadPrograms = async () => {
       try {
@@ -61,13 +70,17 @@ function ProgramsPage() {
     ? programs
     : programs.filter((p) => p.category.toLowerCase() === filter.toLowerCase());
 
+  const getColorForProgram = (program) => {
+    return categoryColors[program.category] || categoryColors.default;
+  };
+
   if (loading) {
     return (
       <main className="relative min-h-screen flex items-center justify-center bg-gray-900 overflow-hidden">
         <img
           src="/assets/Hero/bg4.jpg"
           alt="Background"
-          className="absolute inset-0 w-full h-full object-cover opacity-30 blur-md scale-105"
+          className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm"
         />
         <div className="relative z-10 text-center animate-softFadeIn">
           <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 tracking-tight">
@@ -87,7 +100,7 @@ function ProgramsPage() {
         <img
           src="/assets/Hero/bg4.jpg"
           alt="Background"
-          className="absolute inset-0 w-full h-full object-cover opacity-30 blur-md scale-105"
+          className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm"
         />
         <p className="relative z-10 text-xl md:text-2xl text-red-400">{error}</p>
       </main>
@@ -100,7 +113,7 @@ function ProgramsPage() {
       <img
         src="/assets/Hero/bg4.jpg"
         alt="Programs Background"
-        className="absolute inset-0 w-full h-full object-cover opacity-20 blur-lg scale-105"
+        className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm"
         loading="lazy"
       />
       <div className="absolute inset-0 bg-gray-900 bg-opacity-60"></div>
@@ -129,12 +142,12 @@ function ProgramsPage() {
         </div>
 
         {/* Programs Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
           {filteredPrograms.length > 0 ? (
             filteredPrograms.map((program) => (
               <div
                 key={program._id}
-                className={`${program.color} rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 bg-opacity-90 backdrop-blur-sm border border-gray-200/20 group`}
+                className={`${getColorForProgram(program)} rounded-xl p-6 shadow-lg hover:shadow-2xl transition-all duration-500 ease-in-out transform hover:-translate-y-2 bg-opacity-90 backdrop-blur-sm border border-gray-200/20 group`}
               >
                 <h2 className="text-xl sm:text-2xl font-bold text-white mb-3 tracking-tight">
                   {program.title}

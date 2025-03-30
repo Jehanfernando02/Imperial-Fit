@@ -54,6 +54,15 @@ function ProductCard(props) {
 
   return (
     <div className="relative group bg-white bg-opacity-80 backdrop-blur-sm rounded-lg shadow-md hover:shadow-xl transition-all duration-300 ease-in-out transform hover:-translate-y-1 border border-gray-200 overflow-hidden">
+      {/* Background image - consistent with other pages */}
+      <div className="absolute inset-0 z-0 opacity-5">
+        <img 
+          src="/assets/Hero/bg4.jpg" 
+          alt="Background" 
+          className="w-full h-full object-cover blur-md" 
+        />
+      </div>
+      
       {/* Background gradient accent */}
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-yellow-400 to-orange-500"></div>
       
@@ -83,7 +92,7 @@ function ProductCard(props) {
       </Link>
 
       {/* Content Section - More compact */}
-      <div className="p-3">
+      <div className="p-4 relative z-10">
         {/* Name and Price */}
         <div className="flex items-center justify-between">
           <h3 className="text-base font-bold text-gray-900 tracking-tight truncate max-w-[70%]">
@@ -100,7 +109,7 @@ function ProductCard(props) {
         </p>
 
         {/* Controls - Redesigned to be more compact */}
-        <div className="mt-2 flex items-center justify-between">
+        <div className="mt-3 flex items-center justify-between">
           <div className="flex items-center gap-1 bg-gray-100 rounded-full p-0.5 shadow-sm">
             <button
               onClick={handleRemoveFromCart}
