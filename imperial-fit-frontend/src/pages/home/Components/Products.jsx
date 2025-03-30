@@ -51,14 +51,26 @@ function Products() {
         fetchInitialData();
     }, []);
 
-
     if (isLoading) {
         return (
-            <section className="relative py-12 px-4 w-full min-h-screen flex items-center justify-center">
-                <img src="/assets/Hero/bg4.jpg" alt="Background" className="absolute inset-0 w-full h-full object-cover opacity-30" />
-                <div className="relative z-10 text-center">
-                    <div className="text-black text-2xl sm:text-4xl font-bold mb-4">Loading...</div>
-                    <div className="loader"></div>
+            <section className="relative py-12 px-4 w-full min-h-screen flex items-center justify-center bg-neutral-900">
+                <img 
+                    src="/assets/Hero/bg4.jpg" 
+                    alt="Background" 
+                    className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm" 
+                />
+                <div className="relative z-10 text-center max-w-md animate-softFadeIn">
+                    <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4">
+                        Warming up your workout gear!
+                    </h2>
+                    <p className="text-gray-200 text-sm sm:text-base mb-6">
+                        Our servers are stretching—just a moment, and we’ll be ready!
+                    </p>
+                    <div className="w-3/4 mx-auto bg-gray-700 rounded-full h-2 overflow-hidden">
+                        <div 
+                            className="bg-yellow-400 h-2 animate-softPulse"
+                        ></div>
+                    </div>
                 </div>
             </section>
         );

@@ -3,3 +3,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes softFadeIn {
+    0% { opacity: 0; transform: translateY(5px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes softPulse {
+    0% { width: 70%; opacity: 0.8; }
+    50% { width: 80%; opacity: 1; }
+    100% { width: 70%; opacity: 0.8; }
+}
+
+.animate-softFadeIn {
+    animation: softFadeIn 0.8s ease-out forwards;
+}
+
+.animate-softPulse {
+    animation: softPulse 1.5s ease-in-out infinite;
+}
