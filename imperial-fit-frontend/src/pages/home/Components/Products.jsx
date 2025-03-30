@@ -85,6 +85,9 @@ function Products() {
           alt="Background" 
           className="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm" 
         />
+         <div className="relative z-10 text-3xl text-white animate-pulse">
+          Loading
+        </div>
       </section>
     );
   }
