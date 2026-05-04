@@ -1,6 +1,6 @@
 Imperial Fit 🏋️‍♂️ - Fitness E-Commerce Platform
 
-Imperial Fit is a dynamic, full-stack e-commerce platform crafted for fitness enthusiasts to discover and purchase premium fitness gear. Built with the MERN stack (MongoDB, Express.js, React, Node.js) and powered by Clerk for secure user authentication, this project delivers a seamless shopping experience with a sleek, fitness-inspired design. As a CS undergraduate, I developed this project to showcase my expertise in full-stack development, API integration, and modern UI/UX design, making it a centerpiece of my internship portfolio.
+Imperial Fit is a dynamic, full-stack e-commerce platform crafted for fitness enthusiasts to discover and purchase premium fitness gear. Built with the MERN stack (MongoDB, Express.js, React, Node.js) and powered by Clerk for secure user authentication, this project delivers a seamless shopping experience with a sleek, fitness-inspired design. As a CS undergraduate, I developed this project to showcase my expertise in full-stack development, API integration, and modern UI/UX design.
 
 
 🔖 Introduction
