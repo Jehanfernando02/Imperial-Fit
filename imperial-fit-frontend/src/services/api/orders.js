@@ -47,3 +47,22 @@ export const getOrdersByUser = async (userId) => {
 
   return await res.json();
 };
+
+export const createCheckoutSession = async (orderId) => {
+  const token = await window.Clerk?.session?.getToken();
+
+  const res = await fetch(`https://imperial-fit-backend.onrender.com/api/stripe/create-checkout-session`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ orderId }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to create checkout session");
+  }
+
+  return await res.json();
+};
