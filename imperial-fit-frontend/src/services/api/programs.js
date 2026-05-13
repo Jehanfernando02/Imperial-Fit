@@ -1,5 +1,5 @@
 // src/services/api/programs.js
-const API_BASE_URL = "https://imperial-fit-backend.onrender.com/api"; // Replace with your actual Render URL
+const API_BASE_URL = "https://imperial-fit.onrender.com/api"; // Replace with your actual Render URL
 
 export const getPrograms = async () => {
   const response = await fetch(`${API_BASE_URL}/programs`, {
