@@ -7,8 +7,7 @@ export const createOrder = async (req, res) => {
   if (!order.success) {
     return res
       .status(400)
-      .json({ message: `${order.error.message}` })
-      .send();
+      .json({ message: `${order.error.message}` });
   }
 
   const createdOrder = await Order.create({
@@ -16,7 +15,7 @@ export const createOrder = async (req, res) => {
     orderProducts: order.data.orderProducts,
     address: order.data.address,
   });
-  return res.status(201).json(createdOrder).send();
+  return res.status(201).json(createdOrder);
 };
 
 export const getOrderById = async (req, res) => {
@@ -27,10 +26,10 @@ export const getOrderById = async (req, res) => {
   });
 
   if (!order) {
-    return res.status(404).json({ message: "Order not found" }).send();
+    return res.status(404).json({ message: "Order not found" });
   }
 
-  return res.status(200).json(order).send();
+  return res.status(200).json(order);
 };
 
 // export const getOrderForUser = async (req, res) => {

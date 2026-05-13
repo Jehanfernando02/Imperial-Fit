@@ -29,7 +29,7 @@ export const createCheckoutSession = async (req, res) => {
             name: item.productId.name,
             images: [item.productId.image], // Optional, include if valid URL
           },
-          unit_amount: Math.round(parseFloat(item.productId.price) * 100), // Stripe uses smallest currency unit (cents)
+          unit_amount: Math.round(parseFloat(item.productId.price.toString().replace(/[^0-9.]/g, "")) * 100), // Stripe uses smallest currency unit (cents)
         },
         quantity: item.quantity,
       };
