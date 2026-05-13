@@ -12,6 +12,7 @@ import { globalErrorHandler } from "./api/middleware/global-error-handler.js";
 import cors from "cors";
 
 console.log("MONGO_URI =", process.env.MONGO_URI);
+console.log(JSON.stringify(process.env.MONGO_URI));
 const app = express();
 
 // Use the webhook router BEFORE express.json()
