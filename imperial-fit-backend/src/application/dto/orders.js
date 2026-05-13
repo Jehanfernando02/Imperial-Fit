@@ -7,4 +7,12 @@ export const createOrderDto = z.object({
       quantity: z.number(),
     })
     .array(),
+  address: z.object({
+    fname: z.string(),
+    lname: z.string(),
+    line_1: z.string(),
+    line_2: z.string().optional().nullable(),
+    city: z.string(),
+    phone: z.string(),
+  }),
 });

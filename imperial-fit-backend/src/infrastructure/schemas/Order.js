@@ -21,6 +21,14 @@ const OrderSchema = new mongoose.Schema({
       },
     ],
   },
+  address: {
+    fname: String,
+    lname: String,
+    line_1: String,
+    line_2: String,
+    city: String,
+    phone: String,
+  },
   paymentStatus: {
     type: String,
     enum: ["pending", "paid", "failed"],

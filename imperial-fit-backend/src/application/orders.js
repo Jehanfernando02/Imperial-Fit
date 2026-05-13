@@ -11,11 +11,12 @@ export const createOrder = async (req, res) => {
       .send();
   }
 
-  await Order.create({
+  const createdOrder = await Order.create({
     userId: order.data.userId,
     orderProducts: order.data.orderProducts,
+    address: order.data.address,
   });
-  return res.status(201).send();
+  return res.status(201).json(createdOrder).send();
 };
 
 export const getOrderById = async (req, res) => {
