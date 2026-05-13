@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { getOrderById } from "../../../services/api/orders";
+import { getOrderById, createCheckoutSession } from "../../../services/api/orders";
 
 function CreditCardPaymentPage() {
   const [searchParams] = useSearchParams();
@@ -9,12 +9,7 @@ function CreditCardPaymentPage() {
 
   const [order, setOrder] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [cardDetails, setCardDetails] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    name: "",
-  });
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const navigate = useNavigate();
 
@@ -33,18 +28,19 @@ function CreditCardPaymentPage() {
     }
   }, [orderId]);
 
-  const handlePayment = () => {
-    if (cardDetails.cardNumber && cardDetails.expiryDate && cardDetails.cvv && cardDetails.name) {
-      // Mock payment success
-      toast.success("Payment successful!");
-      navigate("/confirmation");
-    } else {
-      toast.error("Please enter valid card details.");
+  const handlePayment = async () => {
+    try {
+      setIsProcessing(true);
+      const session = await createCheckoutSession(orderId);
+      if (session && session.url) {
+        window.location.href = session.url; // Redirect to Stripe Checkout
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Error creating payment session. Please try again.");
+    } finally {
+      setIsProcessing(false);
     }
-  };
-
-  const handleInputChange = (e) => {
-    setCardDetails({ ...cardDetails, [e.target.name]: e.target.value });
   };
 
   if (isLoading) {
@@ -66,66 +62,16 @@ function CreditCardPaymentPage() {
       <br />
       <p className="text-lg"><strong>Delivery Address:</strong> {order?.address?.line_1 || "N/A"}, {order?.address?.line_2 || "N/A"}, {order?.address?.city || "N/A"}</p>
 
-      <form className="mt-6 space-y-4">
-        <div>
-          <label className="block text-lg">Cardholder Name</label>
-          <input
-            type="text"
-            name="name"
-            value={cardDetails.name}
-            onChange={handleInputChange}
-            className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Enter cardholder name"
-          />
-        </div>
-
-        <div>
-          <label className="block text-lg">Card Number</label>
-          <input
-            type="text"
-            name="cardNumber"
-            value={cardDetails.cardNumber}
-            onChange={handleInputChange}
-            className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Enter your card number"
-          />
-        </div>
-
-        <div className="flex gap-x-4">
-          <div className="flex-1">
-            <label className="block text-lg">Expiry Date</label>
-            <input
-              type="text"
-              name="expiryDate"
-              value={cardDetails.expiryDate}
-              onChange={handleInputChange}
-              className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="MM/YY"
-            />
-          </div>
-
-          <div className="flex-1">
-            <label className="block text-lg">CVV</label>
-            <input
-              type="text"
-              name="cvv"
-              value={cardDetails.cvv}
-              onChange={handleInputChange}
-              className="border p-2 rounded w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
-              placeholder="CVV"
-            />
-          </div>
-        </div>
-
+      <div className="mt-6">
         <button
           type="button"
           onClick={handlePayment}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600 transition duration-200 w-full"
+          disabled={isProcessing}
+          className="bg-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600 transition duration-200 w-full disabled:bg-gray-400"
         >
-          Pay 
-          {/* Rs. {order?.total || "N/A"} */}
+          {isProcessing ? "Processing..." : "Proceed to Stripe Checkout"}
         </button>
-      </form>
+      </div>
     </section>
   );
 }
