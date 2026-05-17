@@ -1,8 +1,9 @@
 function TextInput({ name, label, placeholder, onChange, required, value }) {
   return (
-      <div className="flex flex-col w-full px-2 py-1">
-          <label htmlFor={name} className="text-lg font-bold text-gray-800 mb-1">
+      <div className="flex flex-col w-full">
+          <label htmlFor={name} className="text-sm font-semibold text-gray-300 mb-2 tracking-wide">
               {label}
+              {required && <span className="text-red-400 ml-1">*</span>}
           </label>
           <input
               type="text"
@@ -12,7 +13,7 @@ function TextInput({ name, label, placeholder, onChange, required, value }) {
               name={name}
               onChange={onChange}
               placeholder={placeholder}
-              className="w-full border-2 border-gray-300 rounded-lg p-3 focus:outline-none focus:border-yellow-400 focus:ring-2 focus:ring-yellow-200 transition-all duration-300 hover:shadow-md"
+              className="glass-input w-full rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:ring-2 focus:ring-yellow-400/20 transition-all duration-300"
           />
       </div>
   );
