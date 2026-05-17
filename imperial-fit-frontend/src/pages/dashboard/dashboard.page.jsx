@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
+import { Navigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Scale, Target, TrendingUp, Plus, Trash2, Calendar, LayoutDashboard, User } from "lucide-react";
 import { toast } from "sonner";
@@ -58,8 +59,12 @@ function DashboardPage() {
     }
   };
 
-  if (!isLoaded || isLoading) {
+  if (!isLoaded || (isSignedIn && isLoading)) {
     return <div className="flex items-center justify-center min-h-screen"><div className="w-10 h-10 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" /></div>;
+  }
+
+  if (!isSignedIn) {
+    return <Navigate to="/sign-in" />;
   }
 
   const currentWeight = progressData.length > 0 ? progressData[progressData.length - 1].weight : "--";
