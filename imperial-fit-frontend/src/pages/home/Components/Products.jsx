@@ -5,7 +5,7 @@ import Tab from "./Tab";
 import { getAllProducts } from "../../../services/api/products";
 import { getAllCategories } from "../../../services/api/categories";
 import { Link } from "react-router-dom";
-import { Dumbbell } from "lucide-react";
+import { Dumbbell, Package, ChevronDown } from "lucide-react";
 
 function Products() {
   const [products, setProducts] = useState([]);
@@ -60,15 +60,10 @@ function Products() {
           return prev + Math.random() * 20;
         });
       }, 500);
-
       const messageInterval = setInterval(() => {
         setCurrentMessageIndex((prev) => (prev + 1) % loadingMessages.length);
       }, 3000);
-
-      return () => {
-        clearInterval(progressInterval);
-        clearInterval(messageInterval);
-      };
+      return () => { clearInterval(progressInterval); clearInterval(messageInterval); };
     }
   }, [isInitialLoading]);
 
@@ -88,48 +83,22 @@ function Products() {
 
   if (isInitialLoading) {
     return (
-      <section className="relative flex items-center justify-center w-full min-h-screen px-4 py-12 bg-neutral-900">
-        <img
-          src="/assets/Hero/bg4.jpg"
-          alt="Background"
-          className="absolute inset-0 object-cover w-full h-full opacity-40 blur-sm"
-        />
+      <section className="relative flex items-center justify-center w-full min-h-screen px-4 py-12">
+        <img src="/assets/Hero/bg4.jpg" alt="Background" className="absolute inset-0 object-cover w-full h-full opacity-[0.05] blur-sm" />
         <div className="relative z-10 max-w-lg text-center">
-          <motion.div
-            animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }}
-            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            className="mx-auto mb-4"
-          >
+          <motion.div animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }} className="mx-auto mb-4">
             <Dumbbell className="w-12 h-12 text-yellow-400" />
           </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="mb-4 text-3xl font-extrabold tracking-tight text-yellow-400 sm:text-4xl"
-          >
+          <motion.h2 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="mb-4 text-3xl font-extrabold tracking-tight gradient-text sm:text-4xl">
             Powering Up Your Shop!
           </motion.h2>
           <AnimatePresence mode="wait">
-            <motion.p
-              key={currentMessageIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5 }}
-              className="mb-6 text-lg font-semibold text-gray-100 sm:text-xl"
-            >
+            <motion.p key={currentMessageIndex} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ duration: 0.5 }} className="mb-6 text-lg font-semibold text-gray-300 sm:text-xl">
               {loadingMessages[currentMessageIndex]}
             </motion.p>
           </AnimatePresence>
-          <div className="relative w-3/4 h-4 mx-auto overflow-hidden bg-gray-700 rounded-full">
-            <motion.div
-              className="h-4 bg-gradient-to-r from-yellow-400 to-red-600"
-              initial={{ width: "0%" }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.5, ease: "easeOut" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-20 animate-pulse" />
+          <div className="relative w-3/4 h-2 mx-auto overflow-hidden bg-white/10 rounded-full">
+            <motion.div className="h-2 bg-gradient-to-r from-red-500 to-yellow-400 rounded-full" initial={{ width: "0%" }} animate={{ width: `${progress}%` }} transition={{ duration: 0.5, ease: "easeOut" }} />
           </div>
         </div>
       </section>
@@ -138,23 +107,16 @@ function Products() {
 
   if (isCategoryLoading) {
     return (
-      <section className="relative flex items-center justify-center w-full min-h-screen px-4 py-12 bg-neutral-900">
-        <img
-          src="/assets/Hero/bg4.jpg"
-          alt="Background"
-          className="absolute inset-0 object-cover w-full h-full opacity-40 blur-sm"
-        />
-        <div className="relative z-10 text-3xl text-white animate-pulse">
-          Loading
-        </div>
+      <section className="relative flex items-center justify-center w-full min-h-screen">
+        <div className="w-10 h-10 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
       </section>
     );
   }
 
   if (error) {
     return (
-      <section className="relative w-full min-h-screen px-4 py-12 bg-gradient-to-r from-red-500 to-yellow-500">
-        <h1 className="text-xl text-center text-white sm:text-2xl">Error: {error}</h1>
+      <section className="flex items-center justify-center w-full min-h-screen">
+        <div className="glass-card p-8 text-center"><p className="text-red-400">Error: {error}</p></div>
       </section>
     );
   }
@@ -170,54 +132,60 @@ function Products() {
   const sortedProducts = sortProducts([...products], sortOrder);
 
   return (
-    <section className="w-full min-h-screen px-4 py-12 bg-neutral-900 sm:px-6 lg:px-8">
+    <section className="w-full min-h-screen px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
-        <h1 className="pt-12 mb-6 text-2xl font-extrabold text-center text-red-600 sm:text-3xl md:text-4xl">
-          Premium Gear for Every Fitness Journey
-        </h1>
-        <div className="flex flex-col items-center justify-between gap-4 mb-6 sm:flex-row">
-          <div className="flex items-center">
-            <label htmlFor="sort" className="mr-2 text-sm font-semibold text-white sm:text-base">Sort by Price:</label>
-            <select
-              id="sort"
-              value={sortOrder}
-              onChange={handleSortChange}
-              className="p-2 text-sm text-black bg-white rounded-lg sm:text-base focus:outline-none focus:ring-2 focus:ring-yellow-400"
-            >
-              <option value="low-to-high">Low to High</option>
-              <option value="high-to-low">High to Low</option>
-            </select>
+        {/* Header */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="pt-8 mb-10 text-center">
+          <h1 className="text-3xl font-extrabold gradient-text sm:text-4xl md:text-5xl mb-3">
+            Premium Fitness Gear
+          </h1>
+          <p className="text-gray-500 text-sm max-w-lg mx-auto">Curated collection for every fitness journey</p>
+        </motion.div>
+
+        {/* Controls */}
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <label htmlFor="sort" className="text-sm font-medium text-gray-400">Sort:</label>
+            <div className="relative">
+              <select
+                id="sort"
+                value={sortOrder}
+                onChange={handleSortChange}
+                className="glass-input appearance-none rounded-xl px-4 py-2.5 pr-10 text-sm text-gray-200 cursor-pointer"
+              >
+                <option value="low-to-high" className="bg-neutral-900">Low to High</option>
+                <option value="high-to-low" className="bg-neutral-900">High to Low</option>
+              </select>
+              <ChevronDown size={14} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+            </div>
           </div>
-          <Link to="/order">
-            <button className="px-4 py-2 text-sm text-black transition-all duration-300 bg-yellow-400 rounded-md shadow-md sm:text-base hover:bg-red-600 hover:text-white">
-              View Past Orders
-            </button>
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link to="/order" className="flex items-center gap-2 glass-input !border-yellow-400/20 hover:!border-yellow-400/40 rounded-xl px-4 py-2.5 text-sm text-yellow-400 font-medium transition-all">
+              <Package size={14} /> Past Orders
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-wrap justify-center gap-2 mt-6 overflow-x-auto sm:gap-4">
+
+        {/* Category Tabs */}
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3 mb-10">
           {[{ _id: "ALL", name: "All" }, ...categories].map((el) => (
-            <Tab
-              key={el._id}
-              category={el}
-              onClick={handleTabClick}
-              isActive={selectedCategory === el._id}
-            />
+            <Tab key={el._id} category={el} onClick={handleTabClick} isActive={selectedCategory === el._id} />
           ))}
         </div>
-        <div className="grid grid-cols-1 gap-4 mt-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-6">
+
+        {/* Product Grid */}
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-6">
           {sortedProducts.length > 0 ? (
             sortedProducts.map((el) => (
-              <ProductCard
-                key={el._id}
-                _id={el._id}
-                image={el.image}
-                name={el.name}
-                price={el.price}
-                description={el.description}
-              />
+              <ProductCard key={el._id} _id={el._id} image={el.image} name={el.name} price={el.price} description={el.description} />
             ))
           ) : (
-            <p className="text-sm text-center text-white col-span-full sm:text-base">No products found</p>
+            <div className="col-span-full text-center py-20">
+              <div className="glass-card inline-block p-8">
+                <Package size={40} className="text-gray-600 mx-auto mb-3" />
+                <p className="text-gray-400">No products found</p>
+              </div>
+            </div>
           )}
         </div>
       </div>
