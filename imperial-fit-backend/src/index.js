@@ -7,6 +7,7 @@ import categoriesRouter from "./api/categories.js";
 import ordersRouter from "./api/orders.js";
 import stripeRouter from "./api/stripe.js";
 import stripeWebhookRouter from "./api/stripeWebhook.js";
+import clerkWebhookRouter from "./api/clerkWebhook.js";
 import progressRouter from "./api/progress.js";
 import { connectDB } from "./infrastructure/db.js";
 import { globalErrorHandler } from "./api/middleware/global-error-handler.js";
@@ -16,8 +17,9 @@ console.log("MONGO_URI =", process.env.MONGO_URI);
 console.log(JSON.stringify(process.env.MONGO_URI));
 const app = express();
 
-// Use the webhook router BEFORE express.json()
+// Use the webhook routers BEFORE express.json()
 app.use("/api/stripe/webhook", stripeWebhookRouter);
+app.use("/api/webhooks/clerk", clerkWebhookRouter);
 
 app.use(express.json());
 
