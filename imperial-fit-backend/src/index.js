@@ -38,6 +38,7 @@ app.use(cors({
 }));
 
 // Define the routes for your API
+app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
 app.use("/api/products", productsRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/orders", ordersRouter);
