@@ -1,92 +1,96 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useState } from "react";
-import { toast } from "sonner";
-
 import { getOrderById } from "../../services/api/orders";
+import { motion } from "framer-motion";
+import { Banknote, CreditCard, ShieldCheck } from "lucide-react";
 
 function PaymentPage() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get("orderId");
-
   const [order, setOrder] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState("");
-
   const navigate = useNavigate();
 
   useEffect(() => {
     if (orderId) {
       getOrderById(orderId)
-        .then((data) => {
-          setOrder(data);
-        })
-        .catch((e) => {
-          setIsError(true);
-          setError(e.message);
-          console.log(e);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        .then((data) => setOrder(data))
+        .catch((e) => { setIsError(true); setError(e.message); })
+        .finally(() => setIsLoading(false));
     }
   }, [orderId]);
 
   if (isLoading) {
     return (
-      <section className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <h1 className="text-4xl font-semibold mb-4">Payment</h1>
-        <div className="border-b border-gray-300 w-full mb-4"></div>
-        <div className="py-8">
-          <p className="text-lg text-gray-700">Loading...</p>
-        </div>
-      </section>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="w-10 h-10 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin" />
+      </div>
     );
   }
 
   if (isError) {
     return (
-      <section className="flex flex-col items-center justify-center h-screen bg-gray-100">
-        <h1 className="text-4xl font-semibold mb-4">Payment</h1>
-        <div className="border-b border-gray-300 w-full mb-4"></div>
-        <div className="py-8">
-          <p className="text-red-500 text-lg">Some error happened: {error}</p>
-        </div>
-      </section>
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="glass-card p-8 text-center"><p className="text-red-400">{error}</p></div>
+      </div>
     );
   }
 
-  return (
-    <div className="bg-gray-50 min-h-screen flex items-center justify-center">
-      
-      <section className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md">
-        
-        <h1 className="text-4xl font-semibold text-center mb-6">Payment Options</h1>
-        <div className="grid grid-cols-2 gap-4">
-          {/* Navigate to the Cash On Delivery page */}
-          <button
-            type="button"
-            onClick={() => {
-              navigate(`/payment/cash-on-delivery?orderId=${orderId}`);
-            }}
-            className="bg-green-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-600 transition duration-200"
-          >
-            Cash On Delivery
-          </button>
+  const paymentOptions = [
+    {
+      icon: Banknote,
+      title: "Cash On Delivery",
+      desc: "Pay when your order arrives at your doorstep",
+      color: "from-emerald-500 to-green-600",
+      glow: "hover:shadow-emerald-500/20",
+      onClick: () => navigate(`/payment/cash-on-delivery?orderId=${orderId}`),
+    },
+    {
+      icon: CreditCard,
+      title: "Credit Card",
+      desc: "Secure payment via Stripe checkout",
+      color: "from-blue-500 to-indigo-600",
+      glow: "hover:shadow-blue-500/20",
+      onClick: () => navigate(`/payment/credit-card?orderId=${orderId}`),
+    },
+  ];
 
-          {/* Navigate to the Credit Card Payment page */}
-          <button
-            type="button"
-            onClick={() => {
-              navigate(`/payment/credit-card?orderId=${orderId}`);
-            }}
-            className="bg-blue-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-600 transition duration-200"
-          >
-            Credit Card
-          </button>
+  return (
+    <div className="min-h-screen flex items-center justify-center py-12 px-4">
+      <div className="max-w-xl w-full">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold gradient-text mb-3">Choose Payment</h1>
+          <p className="text-gray-500 text-sm">Select your preferred payment method</p>
+        </motion.div>
+
+        <div className="space-y-4">
+          {paymentOptions.map((opt, i) => (
+            <motion.button
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              onClick={opt.onClick}
+              className={`w-full glass-card-strong p-6 flex items-center gap-5 text-left hover-glow ${opt.glow} transition-all duration-300 group`}
+            >
+              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${opt.color} flex items-center justify-center shrink-0 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <opt.icon size={24} className="text-white" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-white mb-1">{opt.title}</h3>
+                <p className="text-sm text-gray-400">{opt.desc}</p>
+              </div>
+            </motion.button>
+          ))}
         </div>
-      </section>
+
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="flex items-center justify-center gap-2 mt-8 text-gray-600 text-xs">
+          <ShieldCheck size={14} /> Your payment information is always secure
+        </motion.div>
+      </div>
     </div>
   );
 }
