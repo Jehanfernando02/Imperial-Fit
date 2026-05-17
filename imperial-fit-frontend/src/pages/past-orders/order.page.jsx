@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getOrdersByUser } from "../../services/api/orders";
 import { useUser } from "@clerk/clerk-react";
+import { motion } from "framer-motion";
+import { Package, MapPin, Phone, CreditCard, Truck } from "lucide-react";
 
 const OrdersPage = () => {
   const { user } = useUser();
@@ -12,27 +14,19 @@ const OrdersPage = () => {
     if (user) {
       getOrdersByUser(user.id)
         .then((fetchedOrders) => {
-          console.log("Fetched Orders:", fetchedOrders); // Debug log
           setOrders(Array.isArray(fetchedOrders) ? fetchedOrders : []);
           setLoading(false);
         })
-        .catch((err) => {
-          setError(err.message);
-          setLoading(false);
-        });
+        .catch((err) => { setError(err.message); setLoading(false); });
     }
   }, [user]);
 
   if (loading) {
     return (
-      <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-800 to-black">
-        <img
-          src="/assets/Hero/bg4.jpg"
-          alt="Background"
-          className="absolute inset-0 w-full h-full object-cover opacity-20"
-        />
-        <div className="relative z-10 text-3xl text-white animate-pulse">
-          Loading your past orders...
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 text-sm">Loading your orders...</p>
         </div>
       </div>
     );
@@ -40,99 +34,92 @@ const OrdersPage = () => {
 
   if (error) {
     return (
-      <div className="text-center text-red-400 text-2xl py-20 bg-gray-900 min-h-screen">
-        Error loading orders: {error}
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="glass-card p-8 text-center"><p className="text-red-400">Error: {error}</p></div>
       </div>
     );
   }
 
-  const cardGradients = [
-    "from-red-500 to-pink-600",
-    "from-green-500 to-teal-600",
-    "from-blue-500 to-indigo-600",
-    "from-yellow-500 to-orange-600",
-    "from-purple-500 to-violet-600",
-  ];
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-black py-12 px-4 sm:px-6 lg:px-8">
-      <h2 className="text-4xl font-extrabold text-yellow-300 mb-10 text-center pt-16 tracking-wide">
-        Your Past Orders
-      </h2>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center pt-8 mb-10">
+        <h1 className="text-4xl font-extrabold gradient-text mb-3">Your Orders</h1>
+        <p className="text-gray-500 text-sm">{orders.length > 0 ? `${orders.length} order${orders.length > 1 ? 's' : ''} found` : 'No orders yet'}</p>
+      </motion.div>
+
+      <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {orders.length > 0 ? (
           orders.map((order, index) => {
             const safeAddress = order.address || {};
             const safeProducts = order.orderProducts || [];
             return (
-              <div
+              <motion.div
                 key={order._id || index}
-                className={`relative bg-gradient-to-br ${
-                  cardGradients[index % cardGradients.length]
-                } text-white p-6 rounded-xl shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="glass-card-strong p-6 hover-glow transition-all duration-300"
               >
-                <div className="absolute top-0 left-0 w-full h-2 bg-white opacity-10 rounded-t-xl" />
-                <div className="mb-4">
-                  <p className="text-lg font-bold text-white">
-                    Order #{index + 1}
-                  </p>
+                {/* Order number badge */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-xs font-bold text-yellow-400 bg-yellow-400/10 px-3 py-1 rounded-full border border-yellow-400/20">Order #{index + 1}</span>
+                  <span className={`text-xs font-semibold px-3 py-1 rounded-full ${order.paymentStatus === "PENDING" ? "bg-amber-500/10 text-amber-400 border border-amber-500/20" : "bg-green-500/10 text-green-400 border border-green-500/20"}`}>
+                    {order.paymentStatus || "N/A"}
+                  </span>
                 </div>
+
                 <div className="space-y-3">
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Order ID:</span>
-                    <span className="text-gray-100 break-all">{order._id || "N/A"}</span>
+                  <div className="flex items-start gap-3 p-2.5 bg-white/[0.02] rounded-lg">
+                    <Package size={15} className="text-gray-500 mt-0.5 shrink-0" />
+                    <div className="min-w-0">
+                      <p className="text-[10px] text-gray-600 uppercase tracking-wider">Products</p>
+                      <p className="text-xs text-gray-300 truncate">
+                        {safeProducts.length > 0 ? safeProducts.map(p => `${p.productId?.name || "Unknown"} (×${p.quantity || 1})`).join(", ") : "N/A"}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Products:</span>
-                    <span className="text-gray-100">
-                      {safeProducts.length > 0
-                        ? safeProducts.map(p => `${p.productId?.name || "Unknown"} (x${p.quantity || 1})`).join(", ")
-                        : "N/A"}
-                    </span>
+
+                  <div className="flex items-start gap-3 p-2.5 bg-white/[0.02] rounded-lg">
+                    <CreditCard size={15} className="text-gray-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-gray-600 uppercase tracking-wider">Total</p>
+                      <p className="text-sm font-bold gradient-text">
+                        Rs. {safeProducts.reduce((total, item) => total + (parseFloat(item.productId?.price || 0) * (item.quantity || 1)), 0).toFixed(2)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Total:</span>
-                    <span className="text-gray-100">
-                      Rs. {safeProducts.reduce((total, item) => total + (parseFloat(item.productId?.price || 0) * (item.quantity || 1)), 0).toFixed(2) || "0.00"}
-                    </span>
+
+                  <div className="flex items-start gap-3 p-2.5 bg-white/[0.02] rounded-lg">
+                    <MapPin size={15} className="text-gray-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-gray-600 uppercase tracking-wider">Address</p>
+                      <p className="text-xs text-gray-300">{safeAddress.line_1 ? `${safeAddress.line_1}, ${safeAddress.city || ""}` : "N/A"}</p>
+                    </div>
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Name:</span>
-                    <span className="text-gray-100">
-                      {safeAddress.fname || safeAddress.lname ? `${safeAddress.fname || "Unknown"} ${safeAddress.lname || "User"}` : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Address:</span>
-                    <span className="text-gray-100">
-                      {safeAddress.line_1 ? `${safeAddress.line_1}, ${safeAddress.line_2 || ""}, ${safeAddress.city || ""}` : "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Phone:</span>
-                    <span className="text-gray-100">{safeAddress.phone || "N/A"}</span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Payment Status:</span>
-                    <span className={`font-medium ${order.paymentStatus === "PENDING" ? "text-yellow-200" : "text-green-200"}`}>
-                      {order.paymentStatus || "N/A"}
-                    </span>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-sm text-gray-200">Delivery Status:</span>
-                    <span className={`font-medium ${order.deliveryStatus === "Pending" ? "text-yellow-200" : "text-green-200"}`}>
-                      {order.deliveryStatus || "N/A"}
-                    </span>
+
+                  <div className="flex items-center gap-3 p-2.5 bg-white/[0.02] rounded-lg">
+                    <Truck size={15} className="text-gray-500 shrink-0" />
+                    <div>
+                      <p className="text-[10px] text-gray-600 uppercase tracking-wider">Delivery</p>
+                      <p className={`text-xs font-medium ${order.deliveryStatus === "Pending" ? "text-amber-400" : "text-green-400"}`}>
+                        {order.deliveryStatus || "N/A"}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             );
           })
         ) : (
-          <div className="col-span-full text-center text-white text-3xl py-20">
-            <p className="font-semibold">No orders yet!</p>
-            <p className="text-lg mt-2 text-gray-300">Explore our shop and place your first order today.</p>
-          </div>
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="col-span-full">
+            <div className="glass-card max-w-md mx-auto p-12 text-center">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center animate-float">
+                <Package size={32} className="text-gray-600" />
+              </div>
+              <p className="text-xl font-bold text-gray-300 mb-2">No orders yet!</p>
+              <p className="text-sm text-gray-500">Explore our shop and place your first order today.</p>
+            </div>
+          </motion.div>
         )}
       </div>
     </div>
