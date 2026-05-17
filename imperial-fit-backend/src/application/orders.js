@@ -32,8 +32,15 @@ export const getOrderById = async (req, res) => {
   return res.status(200).json(order);
 };
 
-// export const getOrderForUser = async (req, res) => {
-//   const userId = req.params.userId;
-//   const orders = await Order.find({ userId : userId });
-//     return res.status(200).json(orders).send();
-// };
+export const getOrdersByUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const orders = await Order.find({ userId }).populate({
+      path: "orderProducts.productId",
+      model: "Product",
+    });
+    return res.status(200).json(orders);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

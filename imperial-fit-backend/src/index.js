@@ -7,6 +7,7 @@ import categoriesRouter from "./api/categories.js";
 import ordersRouter from "./api/orders.js";
 import stripeRouter from "./api/stripe.js";
 import stripeWebhookRouter from "./api/stripeWebhook.js";
+import progressRouter from "./api/progress.js";
 import { connectDB } from "./infrastructure/db.js";
 import { globalErrorHandler } from "./api/middleware/global-error-handler.js";
 import cors from "cors";
@@ -20,9 +21,20 @@ app.use("/api/stripe/webhook", stripeWebhookRouter);
 
 app.use(express.json());
 
-// Update the CORS to accept requests from the deployed frontend on Vercel
+// Update the CORS to accept requests from both local and deployed frontend
+const allowedOrigins = [
+  "https://imperial-fit.vercel.app",
+  "https://imperial-fit.onrender.com",
+  "http://localhost:5173",
+  "http://localhost:8000",
+  "http://localhost:3000"
+];
+
 app.use(cors({
-  origin: "https://imperial-fit.vercel.app"  // Update this to match your deployed frontend URL
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // Define the routes for your API
@@ -30,6 +42,7 @@ app.use("/api/products", productsRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/stripe", stripeRouter);
+app.use("/api/progress", progressRouter);
 
 // Error handling middleware
 app.use(globalErrorHandler);
