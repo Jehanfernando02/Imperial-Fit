@@ -1,5 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Navigation from "../componentsN/Navigation";
+import Footer from "../componentsN/Footer";
 import { useState, useEffect } from "react";
 import { CartContext } from "../context/cartContext";
 
@@ -30,11 +31,12 @@ function RootLayout() {
 
   return (
     <CartContext.Provider value={{ cart, updateCart, clearCart }}>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-neutral-950 bg-imperial-texture">
         <Navigation />
         <div className="pt-20">
           <Outlet />
         </div>
+        <Footer />
       </div>
     </CartContext.Provider>
   );

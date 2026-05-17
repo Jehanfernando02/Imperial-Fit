@@ -8,7 +8,7 @@ import ShopPage from "./pages/shop/shop.page.jsx";
 import CartPage from "./pages/cart/cart.page.jsx";
 import ProgramsPage from "./pages/programs/programs.page.jsx";
 import BlogPage from "./pages/blog/blog.page.jsx";
-
+import DashboardPage from "./pages/dashboard/dashboard.page.jsx";
 import ProductDetailPage from "./pages/product/productDetail.page.jsx";
 
 import CheckoutPage from "./pages/checkout/checkout.page.jsx";
@@ -60,6 +60,10 @@ const router = createBrowserRouter([
       {
         path: "/blog",
         element: <BlogPage />,
+      },
+      {
+        path: "/dashboard",
+        element: <DashboardPage />,
       },
       {
         path: "/checkout",
